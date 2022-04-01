@@ -3,22 +3,50 @@ body * {
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Open Sans', sans-serif;
 }
+
+.flex-container > div {
+    margin: 10px;
+    padding: 20px;
+}
+
 
 /*
 Add some style blocks below this line to style the cards.
 Feel free to borrow from Exercise 1.
 */
+section {
+    width: 360px;
+    height: 520px;
+    border: solid 1px #CCC;
+}
 
+section h2, button, p {
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+/* Desktop/Laptop Media Query */
+@media only screen and (min-width: 1001px) {
+    .flex-container {
+        display: flex;
+        flex-direction: row;
+    }
+}
 
 /* Tablet Media Query */
 @media only screen and (max-width: 1000px) {
-
+    .flex-container {
+        display: flex;
+        flex-direction: row;
+    }
 }
 
 /* Mobile Phone Media Query */
 @media only screen and (max-width: 600px) {
-
-    
+    .flex-container {
+        display: flex;
+        flex-direction: column;
+    }
 }
