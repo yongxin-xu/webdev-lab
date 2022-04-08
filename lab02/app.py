@@ -30,7 +30,8 @@ quotes = (
 ##############
 @app.route('/')
 def exercise1():
-    return 'Hello World!'
+    message = "Hi, " + current_user.get_full_name() + "!"
+    return message 
 
 
 ##############
@@ -38,9 +39,11 @@ def exercise1():
 ##############
 @app.route('/quote')
 def exercise2():
+    r_quote = random.choice(quotes)
     return render_template(
         'quote-of-the-day.html',
-        user=current_user
+        user=current_user,
+        random_quote=r_quote
     )
 
 ##############
@@ -49,12 +52,17 @@ def exercise2():
 @app.route('/restaurant-data/')
 @app.route('/restaurant-data')
 def exercise3():
-    search_term = 'pizza'
-    location = 'Evanston, Il'
+    args = request.args
+    location = args.get('location')
+    search_term = args.get('term')
+    if not (location and search_term):
+        return '"location" and "term" are required query parameters'
+    
     url = 'https://www.apitutor.org/yelp/simple/v3/businesses/search?location={0}&term={1}'.format(location, search_term)
     response = requests.get(url)
     data = response.json()
     pprint(data) # for debugging -- prints the result to the command line
+
     return json.dumps(data)
 
 ##############
@@ -74,12 +82,22 @@ def exercise4():
     response = requests.get(url)
     restaurants = response.json()
     pprint(restaurants[0]) # for debugging
+    img = restaurants[0].get('image_url')
+    addr = restaurants[0].get('display_address')
+    price = restaurants[0].get('price')
+    rating = restaurants[0].get('rating')
+    reviews = restaurants[0].get('review_count')
     return render_template(
         'restaurant.html',
         user=current_user,
         search_term=search_term,
         location=location,
-        restaurant=restaurants[0]
+        restaurant=restaurants[0],
+        image_url=img,
+        address=addr,
+        price=price,
+        rating=rating,
+        reviews=reviews
     )
 
 @app.route('/cards/')
