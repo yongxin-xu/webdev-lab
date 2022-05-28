@@ -153,16 +153,56 @@ const utils = {
 const handleServerMessage = ev => {
     const data = JSON.parse(ev.data);
     if (data.type === "login") {
-        console.log('A user has just connected:');
-        console.log(data);
+        // a user has just connected...
+        console.log('A user has just connected:', data);
+        const firstLogin = document.querySelectorAll('#users-list li').length === 0;
+        if (firstLogin) { showOnlineUsers(data); } else { addUser(data); }
     } else if (data.type === "disconnect") {
-        console.log('A user has just disconnected:');
-        console.log(data);
+        // a user has just disconnected...
+        console.log('A user has just disconnected:', data);
+        removeUser(data);
     } else if (data.type === "chat") {
-        console.log('A user has just sent a chat message:');
-        console.log(data);
+        showChat(data)
     } else {
         console.error("Message type not recognized.");
         console.log(data);
     }
+};
+
+const showChat = data => {
+    if (data.username === username) {
+        qs("#chat").insertAdjacentHTML("beforeend", `<div class="right"><strong>You:</strong> <span class="context">say</span> ${data.text}</div>`);
+    } else {
+        qs("#chat").insertAdjacentHTML("beforeend", `<div class="left"><strong>${data.username}:</strong> <span class="context">says</span> ${data.text}</div>`);
+    }
+};
+
+const showOnlineUsers = data => {
+    qs('#users-list').insertAdjacentHTML('afterbegin', '<p class="context">Current Users</p>');
+    qs('#users-list ul').innerHTML = data.active_users.map(user => {
+        return `<li id="${user}">${user}</li>`
+    }).join('');
+    qs('#update').innerHTML = "<p>You have joined the chat</p>";
+    setTimeout(() => {
+        qs('#users-list').setAttribute("aria-live", "off");
+    }, 1500);
+};
+
+const removeUser = data => {
+    const removed = data.user_left;
+        qs('#update').innerHTML = `<p>${removed} has left the chat</p>`;
+        console.log(removed);
+        document.getElementById(removed).remove();
+};
+
+const addUser = data => {
+    qs('#users-list').setAttribute("aria-live", "off");
+        const username = data.user_joined;
+        const template = `
+            <li id="${username}">${username}</li>
+        `;
+        if (!document.getElementById('data.user_joined')) {
+            qs('#users-list ul').insertAdjacentHTML('beforeend', template);
+        }
+        qs('#update').innerHTML = `<p>${username} has joined the chat</p>`;
 };
